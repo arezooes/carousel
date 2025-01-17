@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Horizontal Carousel</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        background-color: #f9f9f9;
+      }
+
+      .carousel {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        position: relative;
+      }
+
+      .carousel img {
+        transition: transform 0.3s ease;
+        cursor: pointer;
+        border-radius: 10px;
+      }
+
+      .thumbnail {
+        width: 200px;
+        height: 200px;
+        opacity: 0.7;
+        flex-shrink: 0;
+      }
+
+      .thumbnail:hover {
+        opacity: 1;
+      }
+
+      .main-image {
+        width: 400px;
+        height: 400px;
+        transform: scale(1.1);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        border: 10px solid #fff;
+      }
+
+      .carousel-content {
+        display: flex;
+        overflow-x: auto;
+        gap: 10px;
+        scroll-behavior: smooth;
+        width: calc(200px * 5 + 10px * 4); /* 5 thumbnails and 4 gaps */
+        max-width: 100%;
+        position: relative;
+        scroll-snap-type: x mandatory;
+        overflow-y: hidden;
+        cursor: grab;
+      }
+
+      .carousel-content:active {
+        cursor: grabbing;
+      }
+
+      .arrow {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background-color: rgba(0, 0, 0, 0.5);
+        color: #fff;
+        border: none;
+        border-radius: 50%;
+        cursor: pointer;
+        padding: 10px;
+        font-size: 18px;
+        z-index: 1;
+      }
+
+      .arrow.left {
+        left: -50px;
+      }
+
+      .arrow.right {
+        right: -50px;
+      }
+
+      @media (max-width: 768px) {
+        .main-image {
+          width: 300px;
+          height: 300px;
+        }
+
+        .thumbnail {
+          width: 80px;
+          height: 80px;
+        }
+
+        .arrow {
+          left: -30px;
+          right: -30px;
+          padding: 8px;
+          font-size: 14px;
+        }
+
+        .carousel-content {
+          width: calc(
+            80px * 5 + 10px * 4
+          ); /* Adjust for 5 thumbnails and 4 gaps */
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="carousel">
+      <button class="arrow left" onclick="moveLeft()">&#8249;</button>
+      <div class="carousel-content" id="carouselContent">
+        <img
+          class="thumbnail"
+          src="https://dl.toosstudio.com/wedding-photography-portfolio/fateme-shahin/w7.jpg"
+          alt="Thumbnail 1"
+        />
+        <img
+          class="thumbnail"
+          src="https://dl.toosstudio.com/wedding-photography-portfolio/fateme-shahin/w6.jpg"
+          alt="Thumbnail 2"
+        />
+        <img
+          class="thumbnail"
+          src="https://dl.toosstudio.com/wedding-photography-portfolio/fateme-shahin/w4.jpg"
+          alt="Thumbnail 3"
+        />
+        <img
+          class="thumbnail"
+          src="https://dl.toosstudio.com/wedding-photography-portfolio/fateme-shahin/w6.jpg"
+          alt="Thumbnail 4"
+        />
+        <img
+          class="thumbnail"
+          src="https://dl.toosstudio.com/wedding-photography-portfolio/fateme-shahin/w7.jpg"
+          alt="Thumbnail 5"
+        />
+        <img
+          class="thumbnail"
+          src="https://dl.toosstudio.com/wedding-photography-portfolio/fateme-shahin/w6.jpg"
+          alt="Thumbnail 6"
+        />
+        <img
+          class="thumbnail"
+          src="https://dl.toosstudio.com/wedding-photography-portfolio/fateme-shahin/w4.jpg"
+          alt="Thumbnail 7"
+        />
+        <img
+          class="thumbnail"
+          src="https://dl.toosstudio.com/wedding-photography-portfolio/fateme-shahin/w6.jpg"
+          alt="Thumbnail 8"
+        />
+      </div>
+      <button class="arrow right" onclick="moveRight()">&#8250;</button>
+    </div>
+    <img
+      class="main-image"
+      id="mainImage"
+      src="https://dl.toosstudio.com/wedding-photography-portfolio/fateme-shahin/w7.jpg"
+      alt="Main Image"
+    />
+
+    <script>
+      const carouselContent = document.getElementById("carouselContent");
+      const thumbnails = document.querySelectorAll(".thumbnail");
+      const mainImage = document.getElementById("mainImage");
+
+      let currentIndex = 0;
+
+      function changeMainImage(index) {
+        mainImage.src = thumbnails[index].src;
+      }
+
+      function moveLeft() {
+        carouselContent.scrollBy({
+          left: -(thumbnails[0].clientWidth + 10),
+          behavior: "smooth",
+        });
+        currentIndex =
+          (currentIndex - 1 + thumbnails.length) % thumbnails.length;
+        changeMainImage(currentIndex);
+      }
+
+      function moveRight() {
+        carouselContent.scrollBy({
+          left: thumbnails[0].clientWidth + 10,
+          behavior: "smooth",
+        });
+        currentIndex = (currentIndex + 1) % thumbnails.length;
+        changeMainImage(currentIndex);
+      }
+
+      let isDragging = false;
+      let startX;
+      let scrollLeft;
+
+      carouselContent.addEventListener("mousedown", (e) => {
+        isDragging = true;
+        startX = e.pageX - carouselContent.offsetLeft;
+        scrollLeft = carouselContent.scrollLeft;
+        carouselContent.style.cursor = "grabbing";
+      });
+
+      carouselContent.addEventListener("mouseleave", () => {
+        isDragging = false;
+        carouselContent.style.cursor = "grab";
+      });
+
+      carouselContent.addEventListener("mouseup", () => {
+        isDragging = false;
+        carouselContent.style.cursor = "grab";
+      });
+
+      carouselContent.addEventListener("mousemove", (e) => {
+        if (!isDragging) return;
+        e.preventDefault();
+        const x = e.pageX - carouselContent.offsetLeft;
+        const walk = (x - startX) * 2; // Adjust the scroll speed
+        carouselContent.scrollLeft = scrollLeft - walk;
+      });
+    </script>
+  </body>
+</html>
